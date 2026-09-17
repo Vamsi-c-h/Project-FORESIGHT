@@ -24,6 +24,15 @@ DATA_PATH = (
 
 risk_data = pd.read_csv(DATA_PATH)
 
+def format_inr(value):
+    value = float(value)
+    if abs(value) >= 1e7:
+        return f"₹{value / 1e7:.2f} Cr"
+    if abs(value) >= 1e5:
+        return f"₹{value / 1e5:.2f} lakh"
+    return f"₹{value:,.0f}"
+
+
 # --------------------------------------------------
 # Dashboard title
 # --------------------------------------------------
@@ -81,12 +90,12 @@ col5, col6 = st.columns(2)
 
 col5.metric(
     "Estimated Sales at Risk",
-    f"₹{sales_at_risk:,.0f}"
+    format_inr(sales_at_risk)
 )
 
 col6.metric(
     "Capital Locked in Overstock",
-    f"₹{capital_locked:,.0f}"
+    format_inr(capital_locked)
 )
 
 # --------------------------------------------------
@@ -180,7 +189,7 @@ reorder_display["Projected_Balance"] = (
 )
 
 reorder_display["Sales_At_Risk"] = (
-    reorder_display["Sales_At_Risk"].round(0).astype(int)
+    reorder_display["Sales_At_Risk"].apply(format_inr)
 )
 
 reorder_display = reorder_display.rename(
@@ -367,12 +376,12 @@ detail_col4.metric(
 
 detail_col5.metric(
     "Sales at Risk",
-    f"₹{selected_row['Sales_At_Risk']:,.0f}"
+    format_inr(selected_row["Sales_At_Risk"])
 )
 
 detail_col6.metric(
     "Capital Locked",
-    f"₹{selected_row['Capital_Locked_Overstock']:,.0f}"
+    format_inr(selected_row["Capital_Locked_Overstock"])
 )
 
 # --------------------------------------------------
@@ -412,7 +421,7 @@ overstock_display["Cost_Price"] = (
 )
 
 overstock_display["Capital_Locked_Overstock"] = (
-    overstock_display["Capital_Locked_Overstock"].round(0).astype(int)
+    overstock_display["Capital_Locked_Overstock"].apply(format_inr)
 )
 
 overstock_display = overstock_display.rename(
